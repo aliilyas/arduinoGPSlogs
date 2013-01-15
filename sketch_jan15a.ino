@@ -1,3 +1,4 @@
+#include <Stepper.h>
 #include <SD.h>
 #include <SoftwareSerial.h>
 
@@ -7,13 +8,17 @@
 #define PMTK_SET_NMEA_OUTPUT_RMCONLY "$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*29"
 #define PMTK_SET_NMEA_OUTPUT_ALLDATA "$PMTK314,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0*28"
 
-#define rxPin 2
-#define txPin 3
+#define rxPin 2 // listen SD card
+#define txPin 3 // echo SD card
 
-SoftwareSerial mySerial(rxPin, txPin);
-File myFile;
+/*****************  VARIABLES  ***********************/
+  SoftwareSerial gpsSerial(rxPin, txPin);// GPS serial 
+  File myFile;// data file on SD card
+  int ledPin = 8; // led (info only)
+  String gpsMessage = ""; 
+/******************************************************/
 
-int ledPin = 8; 
+/*****************  SETUP  ****************************/
 void setup()
 {
 
@@ -26,56 +31,58 @@ void setup()
   pinMode(10, OUTPUT);
   /*END SD*/
 
+  // SD serial line
   Serial.begin(57600);
   pinMode(rxPin, INPUT);
   pinMode(txPin, OUTPUT);
-  mySerial.begin(9600);
-  mySerial.println(PMTK_SET_NMEA_OUTPUT_ALLDATA);
-  mySerial.println(PMTK_SET_NMEA_UPDATE_1HZ);
 
-  Serial.println("Initializing SD card...");
+  // gps serial line
+  gpsSerial.begin(9600);
+  gpsSerial.println(PMTK_SET_NMEA_OUTPUT_RMCONLY);
+  gpsSerial.println(PMTK_SET_NMEA_UPDATE_1HZ);
+
+  logMessage("Initializing SD card...");
   if (!SD.begin(10)) {
-    Serial.println("initialization failed!");
+    logMessage("initialization failed!");
     return;
   }
 
-  Serial.println("initialization done.");
-
-  Serial.println("File created.");
+  logMessage("initialization done.");
 }
-int i = 0;
-String stringOne = "";  
-char below;
+/**********************************************************/
+
+
+
+
+/*************       LOOP   *******************************/
 void loop()
 {
-  // Serial.println("inside loop.");
-  int c;
-  if (mySerial.available()) {
-    c = (int)mySerial.read();
+  int character;
+  
+  if (gpsSerial.available()) {
+    character = (int)gpsSerial.read();// reads one by one char of all message from gps
 
-    //    Serial.print((char)c);
-    stringOne+=String((char)c);
-    if((char)c=='\n'){
+
+    gpsMessage+=String((char)character);
+    if(((int)character)==10){
       //myFile = SD.open("tesa.txt", FILE_WRITE);
       //myFile.println(stringOne);
       //myFile.close();
-      Serial.print(stringOne);
-      stringOne="";
+      logMessage(gpsMessage);
+      gpsMessage="";
     }
   }
   if (Serial.available()) {
-    mySerial.print((char)Serial.read());
+    gpsSerial.print((char)Serial.read());// feed gps
   }
 
-
-  // stringOne+=qwe;
-  // Serial.println(stringOne);
-
-  // if (myFile) {
-
 }
+/***************************************************************/
+//testtesttest
 
-
+void logMessage(String s){
+  Serial.println(s);
+}
 
 template<typename Data>
 class Vector {
@@ -124,4 +131,5 @@ private:
     d_data = newdata; 
   };// Allocates double the old space
 };
+
 
