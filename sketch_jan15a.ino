@@ -65,10 +65,15 @@ void loop()
 
     gpsMessage+=String((char)character);
     if(((int)character)==10){
-      myFile = SD.open("1.txt", FILE_WRITE);
-      myFile.println(gpsMessage);
-      myFile.close();
-      logMessage(gpsMessage);
+     
+      //logMessage(gpsMessage);
+      String validity = splitString(gpsMessage,',',2);
+      if(validity.equals("V")){// check if message is valid
+          // change to "A", i cant receive gps in my workplace
+          myFile = SD.open("1.txt", FILE_WRITE);
+          myFile.println(gpsMessage);
+          myFile.close();
+      }
       gpsMessage="";
     }
   }
@@ -83,6 +88,32 @@ void loop()
 void logMessage(String s){
   Serial.println(s);
 }
+
+String splitString(String s, char parser,int index){
+  String rs='\0';
+  int parserIndex = index;
+  int parserCnt=0;
+  int rFromIndex=0, rToIndex=-1;
+
+  while(index>=parserCnt){
+    rFromIndex = rToIndex+1;
+    rToIndex = s.indexOf(parser,rFromIndex);
+
+    if(index == parserCnt){
+      if(rToIndex == 0 || rToIndex == -1){
+        return '\0';
+      }
+      return s.substring(rFromIndex,rToIndex);
+    }
+    else{
+      parserCnt++;
+    }
+
+  }
+  return rs;
+}
+
+
 
 template<typename Data>
 class Vector {
@@ -133,3 +164,18 @@ private:
 };
 
 
+/***********  NMEA message  *****************************************/
+
+//$GPRMC[0]
+//      [1]   220516     Time Stamp
+//      [2]   A          validity - A-ok, V-invalid
+//      [3]   5133.82    current Latitude
+//      [4]   N          North/South
+//      [5]   00042.24   current Longitude
+//      [6]   W          East/West
+//      [7]   173.8      Speed in knots
+//      [8]   231.8      True course
+//      [9]   130694     Date Stamp
+//      [10]  004.2      Variation
+//      [11]  W          East/West
+//      [12]  *70        checksum
