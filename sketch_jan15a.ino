@@ -12,10 +12,10 @@
 #define txPin 3 // echo SD card
 
 /*****************  VARIABLES  ***********************/
-  SoftwareSerial gpsSerial(rxPin, txPin);// GPS serial 
-  File myFile;// data file on SD card
-  int ledPin = 8; // led (info only)
-  String gpsMessage = ""; 
+SoftwareSerial gpsSerial(rxPin, txPin);// GPS serial 
+File myFile;// data file on SD card
+int ledPin = 8; // led (info only)
+String gpsMessage = ""; 
 /******************************************************/
 
 /*****************  SETUP  ****************************/
@@ -58,21 +58,19 @@ void setup()
 void loop()
 {
   int character;
-  
+
   if (gpsSerial.available()) {
     character = (int)gpsSerial.read();// reads one by one char of all message from gps
 
 
     gpsMessage+=String((char)character);
     if(((int)character)==10){
-     
+
       //logMessage(gpsMessage);
-      String validity = splitString(gpsMessage,',',2);
+      String validity = splitString(gpsMessage,2);
       if(validity.equals("V")){// check if message is valid
-          // change to "A", i cant receive gps in my workplace
-          myFile = SD.open("1.txt", FILE_WRITE);
-          myFile.println(gpsMessage);
-          myFile.close();
+        // change to "A", i cant receive gps in my workplace
+        composeAndOutput(gpsMessage);
       }
       gpsMessage="";
     }
@@ -89,7 +87,26 @@ void logMessage(String s){
   Serial.println(s);
 }
 
-String splitString(String s, char parser,int index){
+void composeAndOutput(String input){
+  String output = "";
+  String timestamp =  splitString(input,1);
+  String date =  splitString(input,9);
+  String longitude = splitString(input,5);
+  String latitude = splitString(input,3);
+  String gDirection = splitString(input,4)+"/"+splitString(input,6);
+  String speedInKnots = splitString(input,7);
+  String course = splitString(input,8);
+  String variation = splitString(input,10);
+  String delimiter = " | ";
+
+  output = timestamp + ":"+date + delimiter + " Long : " + longitude +delimiter + " Lat : " +latitude +delimiter+ " Speed : " +speedInKnots; 
+
+  myFile = SD.open("newa.txt", FILE_WRITE);
+  myFile.println(output);
+  myFile.close();
+}
+
+String splitString(String s, int index){
   String rs='\0';
   int parserIndex = index;
   int parserCnt=0;
@@ -97,7 +114,7 @@ String splitString(String s, char parser,int index){
 
   while(index>=parserCnt){
     rFromIndex = rToIndex+1;
-    rToIndex = s.indexOf(parser,rFromIndex);
+    rToIndex = s.indexOf(',',rFromIndex);
 
     if(index == parserCnt){
       if(rToIndex == 0 || rToIndex == -1){
@@ -179,3 +196,4 @@ private:
 //      [10]  004.2      Variation
 //      [11]  W          East/West
 //      [12]  *70        checksum
+
