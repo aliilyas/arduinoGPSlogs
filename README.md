@@ -1,4 +1,4 @@
-arduinoGPSlogs
+Source for GPS logging
 ==============
 
-arduino gps logger
+GPS are logged into SD card  
