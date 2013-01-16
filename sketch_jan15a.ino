@@ -65,9 +65,9 @@ void loop()
 
     gpsMessage+=String((char)character);
     if(((int)character)==10){
-      //myFile = SD.open("tesa.txt", FILE_WRITE);
-      //myFile.println(stringOne);
-      //myFile.close();
+      myFile = SD.open("1.txt", FILE_WRITE);
+      myFile.println(gpsMessage);
+      myFile.close();
       logMessage(gpsMessage);
       gpsMessage="";
     }
