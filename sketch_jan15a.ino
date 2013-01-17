@@ -81,12 +81,17 @@ void loop()
 
 }
 /***************************************************************/
-//testtesttest
 
+/*
+ * Log message to Serial 
+ */
 void logMessage(String s){
   Serial.println(s);
 }
 
+/*
+ * Method creates log and writes this log into SD card 
+ */
 void composeAndOutput(String input){
   String output = "";
   String timestamp =  splitString(input,1);
@@ -106,6 +111,9 @@ void composeAndOutput(String input){
   myFile.close();
 }
 
+/*
+ * Split string and get item in specified index
+ */
 String splitString(String s, int index){
   String rs='\0';
   int parserIndex = index;
@@ -130,6 +138,10 @@ String splitString(String s, int index){
   return rs;
 }
 
+
+/*
+ * Converts knots to kilometers
+ */
 float knotToKilometers(float knot){
   return knot*1.852;
 }
