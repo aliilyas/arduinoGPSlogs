@@ -16,9 +16,9 @@ SoftwareSerial gpsSerial(rxPin, txPin);// GPS serial
 File myFile;// data file on SD card
 int ledPin = 8; // led (info only)
 String gpsMessage = ""; 
-/******************************************************/
 
-/*****************  SETUP  ****************************/
+
+
 void setup()
 {
 
@@ -41,20 +41,21 @@ void setup()
   gpsSerial.println(PMTK_SET_NMEA_OUTPUT_RMCONLY);
   gpsSerial.println(PMTK_SET_NMEA_UPDATE_1HZ);
 
-  logMessage("Initializing SD card...");
+  // Initialize SD card
+  
   if (!SD.begin(10)) {
-    logMessage("initialization failed!");
+    logMessage("SD card initialization failed!");
     return;
   }
-
-  logMessage("initialization done.");
+  logMessage("SD card initialization done.");
+  // TODO make this strigs on LCD
 }
-/**********************************************************/
 
 
 
 
-/*************       LOOP   *******************************/
+
+
 void loop()
 {
   int character;
@@ -80,7 +81,7 @@ void loop()
   }
 
 }
-/***************************************************************/
+
 
 /*
  * Log message to Serial 
@@ -88,6 +89,24 @@ void loop()
 void logMessage(String s){
   Serial.println(s);
 }
+
+
+
+/***********  NMEA message  *****************************************/
+
+//$GPRMC[0]
+//      [1]   220516     Time Stamp
+//      [2]   A          validity - A-ok, V-invalid
+//      [3]   5133.82    current Latitude
+//      [4]   N          North/South
+//      [5]   00042.24   current Longitude
+//      [6]   W          East/West
+//      [7]   173.8      Speed in knots
+//      [8]   231.8      True course
+//      [9]   130694     Date Stamp
+//      [10]  004.2      Variation
+//      [11]  W          East/West
+//      [12]  *70        checksum
 
 /*
  * Method creates log and writes this log into SD card 
@@ -147,19 +166,5 @@ float knotToKilometers(float knot){
 }
 
 
-/***********  NMEA message  *****************************************/
 
-//$GPRMC[0]
-//      [1]   220516     Time Stamp
-//      [2]   A          validity - A-ok, V-invalid
-//      [3]   5133.82    current Latitude
-//      [4]   N          North/South
-//      [5]   00042.24   current Longitude
-//      [6]   W          East/West
-//      [7]   173.8      Speed in knots
-//      [8]   231.8      True course
-//      [9]   130694     Date Stamp
-//      [10]  004.2      Variation
-//      [11]  W          East/West
-//      [12]  *70        checksum
 
