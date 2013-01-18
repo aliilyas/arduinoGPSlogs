@@ -17,8 +17,6 @@ File myFile;// data file on SD card
 int ledPin = 8; // led (info only)
 String gpsMessage = ""; 
 
-
-
 void setup()
 {
 
@@ -51,11 +49,6 @@ void setup()
   // TODO make this strigs on LCD
 }
 
-
-
-
-
-
 void loop()
 {
   int character;
@@ -82,14 +75,12 @@ void loop()
 
 }
 
-
 /*
  * Log message to Serial 
  */
 void logMessage(String s){
   Serial.println(s);
 }
-
 
 
 /***********  NMEA message  *****************************************/
@@ -107,7 +98,6 @@ void logMessage(String s){
 //      [10]  004.2      Variation
 //      [11]  W          East/West
 //      [12]  *70        checksum
-
 /*
  * Method creates log and writes this log into SD card 
  */
@@ -157,14 +147,9 @@ String splitString(String s, int index){
   return rs;
 }
 
-
 /*
  * Converts knots to kilometers
  */
 float knotToKilometers(float knot){
   return knot*1.852;
 }
-
-
-
-
