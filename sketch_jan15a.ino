@@ -56,7 +56,6 @@ void loop()
   if (gpsSerial.available()) {
     character = (int)gpsSerial.read();// reads one by one char of all message from gps
 
-
     gpsMessage+=String((char)character);
     if(((int)character)==10){
 
@@ -125,9 +124,8 @@ void composeAndOutput(String input){
  */
 String splitString(String s, int index){
   String rs='\0';
-  int parserIndex = index;
-  int parserCnt=0;
-  int rFromIndex=0, rToIndex=-1;
+  byte parserCnt=0;
+  short rFromIndex=0, rToIndex=-1;
 
   while(index>=parserCnt){
     rFromIndex = rToIndex+1;
@@ -138,11 +136,9 @@ String splitString(String s, int index){
         return '\0';
       }
       return s.substring(rFromIndex,rToIndex);
-    }
-    else{
+    }else{
       parserCnt++;
     }
-
   }
   return rs;
 }
